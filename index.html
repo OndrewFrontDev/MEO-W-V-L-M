@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="sk">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WASM kernel → HTML5 Canvas (jablko)</title>
+<style>
+  html,body { margin:0; height:100%; background:#0b1020; display:grid; place-items:center; }
+  canvas { width:min(92vw, 1000px); height:auto; image-rendering: pixelated; box-shadow: 0 10px 30px rgba(0,0,0,.35); border-radius: 10px; }
+  .note { position:fixed; bottom:10px; left:50%; transform:translateX(-50%); color:#cfd7ff; font: 14px/1.4 system-ui, sans-serif; opacity:.75 }
+</style>
+
+<canvas id="gfx" width="800" height="600"></canvas>
+<div class="note" style="color: rgb(216, 19, 216);">
+  MeoW(L)M
+  <h3>Stands for meowl Virutal machine VM for short</h3>
+</div>
+
+
+<script type="module">
+  const W = 800, H = 600;
+  const canvas = document.getElementById('gfx');
+  const ctx = canvas.getContext('2d');
+
+  // Načítaj WASM (C kernel)
+  const { instance } = await WebAssembly.instantiateStreaming(fetch('kernel.wasm'), {});
+  const mem   = instance.exports.memory;
+  const init  = instance.exports.init;
+  const tick  = instance.exports.tick;
+  const fbPtr = instance.exports.fb_ptr;
+
+  init(W, H);
+
+  const ptr = fbPtr();
+  let view  = new Uint8ClampedArray(mem.buffer, ptr, W*H*4);
+  let img   = new ImageData(view, W, H);
+
+  let t0 = performance.now();
+  function loop(){
+    const t = (performance.now() - t0) / 1000;
+    tick(t);
+    // Pozn.: ak by sa pamäť zväčšila (grow), treba reattachnúť view.
+    // Tu ostáva stabilná, takže stačí putImageData:
+    ctx.putImageData(img, 0, 0);
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // (voliteľne) jednoduché prispôsobenie DPI
+  function fit(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width  = W; canvas.height = H; // fixný pixel buffer (WASM)
+    canvas.style.width  = Math.min(1000, innerWidth*0.92) + "px";
+    canvas.style.height = "auto";
+  }
+  addEventListener('resize', fit, { passive:true });
+  fit();
+</script>
+</html>
