@@ -4,13 +4,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>WASM kernel → HTML5 Canvas (jablko)</title>
 <style>
-  html,body { margin:0; height:100%; background:#0b1020; display:grid; place-items:center; }
-  canvas { width:min(92vw, 1000px); height:auto; image-rendering: pixelated; box-shadow: 0 10px 30px rgba(0,0,0,.35); border-radius: 10px; }
-  .note { position:fixed; bottom:10px; left:50%; transform:translateX(-50%); color:#cfd7ff; font: 14px/1.4 system-ui, sans-serif; opacity:.75 }
+  html,body {
+  margin:0; 
+  height:100%; 
+  background:#ffffff; 
+  display:grid; 
+  place-items:center; 
+  }
+  canvas {
+  width:min(92vw, 1000px); 
+  height:auto; 
+  image-rendering: pixelated; 
+  box-shadow: 0 10px 30px rgb(138, 138, 138);
+  }
+  .note { position:fixed; 
+  bottom:10px; left:50%; 
+  transform:translateX(-50%); 
+  color:#cfd7ff; 
+  font: 14px/1.4 system-ui, sans-serif; 
+  opacity:.75 }
 </style>
 
 <canvas id="gfx" width="800" height="600"></canvas>
-<div class="note" style="color: rgb(216, 19, 216);">
+<div class="note" style="color: rgb(247, 247, 247);">
   MeoW(L)M
   <h3>Stands for meowl Virutal machine VM for short</h3>
 </div>
